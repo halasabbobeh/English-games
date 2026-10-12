@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Let's eat!</title>
+<style>
+:root{--bg:#fff4e0;--card:#fff;--ink:#2b2d6e;--or:#f26a2e;--bd:#ffd9b8;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#fff4e0;--card:#fff;--ink:#2b2d6e}}
+:root[data-theme="dark"]{--bg:#fff4e0;--card:#fff;--ink:#2b2d6e}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Comic Sans MS","Chalkboard SE","Trebuchet MS",Arial,sans-serif;text-align:center;min-height:100vh}
+header{background:linear-gradient(#f26a2e,#e0501a);color:#fff;padding:14px 8px}
+h1{margin:0;font-size:2.2rem;text-shadow:2px 2px 0 #b33a0c}
+header small{display:block;margin-top:4px;font-size:1rem}
+main{max-width:560px;margin:0 auto;padding:14px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.btn{border:3px solid var(--or);background:var(--card);color:var(--ink);border-radius:20px;padding:14px 6px;font:inherit;font-size:1.1rem;cursor:pointer;box-shadow:0 5px 0 var(--bd)}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 var(--bd)}
+.btn .e{font-size:2.6rem;display:block}
+.q{font-size:1.6rem;margin:10px 0}
+.big{width:130px;height:130px;margin:6px auto;display:flex;align-items:center;justify-content:center;font-size:5rem}
+.big svg,.opt svg{width:100%;height:100%}
+.opts{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:12px;margin-top:10px}
+.opt{background:var(--card);border:4px solid var(--bd);border-radius:20px;height:120px;display:flex;align-items:center;justify-content:center;font-size:3.6rem;cursor:pointer;padding:10px}
+.opt.n{font-size:3.4rem;font-weight:bold;color:var(--or)}
+.opt.ok{border-color:#2eb872;background:#d9f7e6}.opt.no{border-color:#e74c3c;background:#fde1de;animation:sh .3s}
+@keyframes sh{25%{transform:translateX(-8px)}75%{transform:translateX(8px)}}
+.bar{display:flex;justify-content:space-between;align-items:center;font-size:1.2rem}
+.sm{border:0;background:var(--or);color:#fff;border-radius:14px;padding:8px 14px;font:inherit;cursor:pointer}
+.stars{font-size:2.4rem;letter-spacing:4px}
+.cnt{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}.cnt>span{width:84px;height:84px;display:inline-block}
+.tw{position:relative;width:min(90vw,320px);aspect-ratio:1;margin:8px auto;background:var(--card);border:4px solid var(--bd);border-radius:20px}
+.tw canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none}
+.mem{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.card{height:110px;border-radius:16px;border:3px solid var(--or);background:var(--or);color:#fff;font-size:2.4rem;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:6px}
+.card.up{background:var(--card);color:var(--ink);font-size:1.2rem;font-weight:bold}.card.up svg{width:100%;height:100%}
+.card.done{background:#d9f7e6;border-color:#2eb872}
+footer{padding:16px;font-size:1rem;opacity:.85}
+.pop{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:7rem;pointer-events:none;animation:pp .8s forwards}
+@keyframes pp{0%{transform:scale(.2);opacity:1}60%{transform:scale(1.2);opacity:1}100%{transform:scale(1.4);opacity:0}}
+</style></head><body>
+<header><h1>🍉 Let's eat! 🍳</h1><small>Teacher: Hala Sabbobeh</small></header>
+<main id="m"></main>
+<footer>Unit 2 · Grade 1 English 🐬</footer>
+<script>
+const $=id=>document.getElementById(id), M=$('m');
+const sh=a=>[...a].sort(()=>Math.random()-.5);
+const svg=(v,b)=>`<svg viewBox="0 0 60 60">${b}</svg>`;
+const F=[
+ {w:'pistachio',pl:'pistachios',i:svg(0,'<ellipse cx="30" cy="32" rx="14" ry="20" transform="rotate(25 30 32)" fill="#d9b77a"/><ellipse cx="30" cy="22" rx="7" ry="9" transform="rotate(25 30 22)" fill="#7bb04a"/>')},
+ {w:'watermelon',pl:'watermelons',i:'🍉'},
+ {w:'olive',pl:'olives',i:'🫒'},
+ {w:'date',pl:'dates',i:svg(0,'<ellipse cx="30" cy="30" rx="24" ry="12" transform="rotate(-35 30 30)" fill="#7a3b12"/><path d="M16 38Q30 28 44 20" stroke="#b8672a" stroke-width="3" fill="none"/>')},
+ {w:'cashew',pl:'cashews',i:svg(0,'<path d="M10 22Q38 0 52 28Q54 46 40 48Q46 32 34 26Q24 24 18 34Z" fill="#e8b04a"/>')},
+ {w:'egg',pl:'eggs',i:'🍳'},
+ {w:'bread',pl:'bread',i:'🫓'},
+ {w:'cheese',pl:'cheese',i:'🧀'}
+];
+const col={red:'#d63a2a',blue:'#2a8ad6',green:'#3a9a3a',orange:'#f09a2a'};
+const SH={
+ diamond:c=>svg(0,`<polygon points="30,3 50,30 30,57 10,30" fill="${c}"/>`),
+ circle:c=>svg(0,`<circle cx="30" cy="30" r="25" fill="${c}"/>`),
+ triangle:c=>svg(0,`<polygon points="30,6 55,54 5,54" fill="${c}"/>`),
+ square:c=>svg(0,`<rect x="7" y="7" width="46" height="46" fill="${c}"/>`),
+ hexagon:c=>svg(0,`<polygon points="16,6 44,6 57,30 44,54 16,54 3,30" fill="${c}"/>`)};
+let AC;
+function beep(ok){try{AC=AC||new (window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain();o.connect(g);g.connect(AC.destination);o.frequency.value=ok?740:200;g.gain.value=.12;o.start();o.stop(AC.currentTime+(ok?.25:.3));if(ok)o.frequency.setValueAtTime(980,AC.currentTime+.12)}catch(e){}}
+function say(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='en-US';u.rate=.75;u.pitch=1.1;speechSynthesis.speak(u)}catch(e){}}
+function pop(e){const d=document.createElement('div');d.className='pop';d.textContent=e;document.body.appendChild(d);setTimeout(()=>d.remove(),800)}
+function good(){beep(1);pop(sh(['⭐','🌟','🎉','👏'])[0]);}
+const T=5;let sc=0,qi=0,G=null;
+function menu(){
+ M.innerHTML=`<p class="q">Choose a game! 🎮</p><div class="grid">
+ <button class="btn" onclick="start('listen')"><span class="e">👂</span>Listen &amp; Tap</button>
+ <button class="btn" onclick="start('count')"><span class="e">🔢</span>Count 1 2 3</button>
+ <button class="btn" onclick="start('shape')"><span class="e">🔷</span>Find the Shape</button>
+ <button class="btn" onclick="start('yesno')"><span class="e">✅</span>Yes or No?</button>
+ <button class="btn" onclick="start('mem')"><span class="e">🃏</span>Memory Match</button>
+ <button class="btn" onclick="start('trace')"><span class="e">✏️</span>Trace It!</button></div>`}
+function start(g){G=g;sc=0;qi=0;g=='mem'?mem():g=='trace'?trace():next()}
+function bar(){return `<div class="bar"><button class="sm" onclick="menu()">⬅ Menu</button><span>${'⭐'.repeat(sc)}${'☆'.repeat(Math.max(0,T-sc))}</span></div>`}
+function end(){speechSynthesis&&speechSynthesis.cancel();M.innerHTML=`<p class="q">Well done! 🎉</p><div class="stars">${'⭐'.repeat(sc)||'🙂'}</div><p class="q">${sc} / ${T}</p><button class="btn" onclick="start('${G}')">Play again 🔁</button> <button class="btn" onclick="menu()">Menu 🏠</button>`;if(sc>=3)say('Well done!')}
+function answer(el,ok,again){
+ if(el.dataset.l)return;
+ if(ok){el.classList.add('ok');good();[...document.querySelectorAll('.opt')].forEach(x=>x.dataset.l=1);sc++;qi++;setTimeout(()=>qi>=T?end():next(),900)}
+ else{el.classList.add('no');beep(0);say('Try again')}
+}
+function opts(list,cls){return `<div class="opts">${list.map(o=>`<div class="opt ${cls||''}" onclick="answer(this,${o.ok})">${o.h}</div>`).join('')}</div>`}
+function next(){
+ if(G=='listen'){
+  const f=sh(F),t=f[0],o=sh(f.slice(0,3)).map(x=>({h:x.i,ok:x==t}));
+  M.innerHTML=bar()+`<p class="q">Listen and tap 👂</p><button class="sm" id="sp">🔊 Listen</button>`+opts(o);
+  $('sp').onclick=()=>say(t.w);setTimeout(()=>say(t.w),400);
+ }else if(G=='count'){
+  const f=F[Math.floor(Math.random()*F.length)],n=1+Math.floor(Math.random()*3);
+  M.innerHTML=bar()+`<p class="q">How many ${n>1?f.pl:f.w}? 🤔</p><div class="cnt">${Array(n).fill(`<span>${f.i.startsWith('<')?f.i:`<b style="font-size:4rem">${f.i}</b>`}</span>`).join('')}</div>`+opts([1,2,3].map(x=>({h:x,ok:x==n})),'n');
+  setTimeout(()=>say('How many '+(n>1?f.pl:f.w)+'?'),300);
+ }else if(G=='shape'){
+  const names=sh(Object.keys(SH)),cs=Object.keys(col),t=names[0],c=cs[Math.floor(Math.random()*4)];
+  const o=sh(names.slice(0,4)).map((s,i)=>({h:SH[s](col[sh(cs)[0]]),ok:s==t}));
+  M.innerHTML=bar()+`<p class="q">Find the <b style="color:${col[c]}">${c}</b> ${t}!</p><div class="big">${SH[t](col[c])}</div>`+opts(o.map(x=>x.ok?{h:SH[t](col[c]),ok:1}:x));
+  say('Find the '+c+' '+t);
+ }else if(G=='yesno'){
+  const f=sh(F),t=f[0],isY=Math.random()<.5,q=isY?t:f[1];
+  M.innerHTML=bar()+`<div class="big">${t.i}</div><p class="q">Is it ${/^[aeiou]/.test(q.w)?'an':'a'} <b>${q.w}</b>?</p>`+opts([{h:'✅ Yes',ok:isY},{h:'❌ No',ok:!isY}]);
+  say('Is it '+(/^[aeiou]/.test(q.w)?'an ':'a ')+q.w+'?');
+ }
+}
+/* Memory */
+function mem(){
+ const p=sh(F).slice(0,3);let cards=sh(p.flatMap(f=>[{k:f.w,h:f.i},{k:f.w,h:`<span>${f.w}</span>`}])),open=[],done=0;
+ M.innerHTML=bar()+`<p class="q">Find the pairs! 🃏</p><div class="mem">${cards.map((c,i)=>`<div class="card" data-i="${i}">?</div>`).join('')}</div>`;
+ document.querySelectorAll('.card').forEach(el=>el.onclick=()=>{
+  if(el.classList.contains('up')||el.classList.contains('done')||open.length==2)return;
+  const c=cards[el.dataset.i];el.classList.add('up');el.innerHTML=c.h;say(c.k);open.push(el);
+  if(open.length==2){const[a,b]=open;
+   if(cards[a.dataset.i].k==cards[b.dataset.i].k){setTimeout(()=>{a.classList.add('done');b.classList.add('done');open=[];good();done++;sc=done;if(done==3)setTimeout(()=>{sc=T;end()},900)},500)}
+   else setTimeout(()=>{[a,b].forEach(x=>{x.classList.remove('up');x.textContent='?'});open=[];beep(0)},900)}
+ });
+}
+/* Trace */
+const TR=['1','2','3','🍉'];
+function trace(){
+ const k=TR[qi%TR.length];
+ M.innerHTML=bar()+`<p class="q">Trace the dots with your finger ✏️</p><div class="tw"><canvas id="c1" width="320" height="320"></canvas><canvas id="c2" width="320" height="320"></canvas></div>`;
+ const c1=$('c1'),c2=$('c2'),x=c1.getContext('2d'),y=c2.getContext('2d');
+ const path=ctx=>{ if(k=='🍉'){ctx.beginPath();ctx.arc(160,110,110,0,Math.PI);ctx.closePath()}else{ctx.font='bold 290px Arial';ctx.textAlign='center';ctx.textBaseline='middle'}};
+ const draw=(ctx,fn)=>{path(ctx);k=='🍉'?ctx.stroke():fn(ctx)};
+ const mk=document.createElement('canvas');mk.width=mk.height=320;const m=mk.getContext('2d');
+ m.fillStyle='#000';m.lineWidth=36;m.strokeStyle='#000';
+ if(k=='🍉'){path(m);m.stroke()}else{path(m);m.fillText(k,160,170)}
+ const d=m.getImageData(0,0,320,320).data,pts=[];
+ for(let j=0;j<320;j+=12)for(let i=0;i<320;i+=12)if(d[(j*320+i)*4+3]>128)pts.push([i,j,0]);
+ x.strokeStyle='#8a8fc9';x.lineWidth=5;x.lineCap='round';x.setLineDash([2,12]);
+ if(k=='🍉'){path(x);x.stroke();x.beginPath();x.arc(160,110,80,0,Math.PI);x.stroke();x.setLineDash([]);x.fillStyle='#f26a2e';[[110,150],[160,165],[210,150]].forEach(p=>{x.beginPath();x.arc(p[0],p[1],5,0,7);x.fill()})}
+ else{path(x);x.strokeText(k,160,170)}
+ y.strokeStyle='#f26a2e';y.lineWidth=18;y.lineCap=y.lineJoin='round';
+ let dn=false,last=null,fin=false;
+ const pos=e=>{const r=c2.getBoundingClientRect();return[(e.clientX-r.left)*320/r.width,(e.clientY-r.top)*320/r.height]};
+ c2.onpointerdown=e=>{dn=true;last=pos(e);c2.setPointerCapture(e.pointerId)};
+ c2.onpointermove=e=>{if(!dn||fin)return;const p=pos(e);y.beginPath();y.moveTo(...last);y.lineTo(...p);y.stroke();last=p;
+  pts.forEach(q=>{if(!q[2]&&Math.hypot(q[0]-p[0],q[1]-p[1])<26)q[2]=1});
+  if(pts.filter(q=>q[2]).length/pts.length>.8){fin=true;good();sc++;qi++;setTimeout(()=>qi>=T-1?(sc=T,end()):trace(),900)}};
+ c2.onpointerup=()=>dn=false;
+ if(k!='🍉')say(k=='1'?'one':k=='2'?'two':'three');else say('watermelon');
+ $('c2').parentNode.insertAdjacentHTML('afterend','<button class="sm" onclick="trace()">🔄 Clear</button>');
+}
+menu();
+</script></body></html>
